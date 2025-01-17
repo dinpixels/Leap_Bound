@@ -47,5 +47,22 @@ direction = 1
 speed = 30.0
 seconds = 4.0
 
+[node name="Spawner5" parent="Area" instance=ExtResource( 7 )]
+position = Vector2( 200, 104 )
+no = 1
+speed = 30.0
+seconds = 2.5
+
+[node name="Spawner6" parent="Area" instance=ExtResource( 7 )]
+position = Vector2( -40, 88 )
+no = 1
+direction = 1
+speed = 30.0
+seconds = 2.0
+
+[node name="Spawner7" parent="Area" instance=ExtResource( 7 )]
+position = Vector2( 200, 72 )
+speed = 35.0
+
 [node name="Love" parent="Area" instance=ExtResource( 1 )]
 position = Vector2( 88, 24 )

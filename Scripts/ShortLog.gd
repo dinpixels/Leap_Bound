@@ -1,13 +1,9 @@
 tool
 extends MovingBridge
 
-# DON'T REMOVE! It takes the speed and direction from this class.
-
 # WARNING: Use MovingBridge (e.g. ShortLog and LongLog) to waters without any safe tiles only!
 
 # Otherwise, the player would jump to nowhere upon leaving the MovingBridge, as the MovingBridge doesn't have any tiles to detect on, thus nothing to base the coordinates with which the player needs to jump onto
-
-# Note: Put 'MovingBridgeTile' script to the Tile Area2D.
 
 
 func set_direction(new_direction: int) -> void:

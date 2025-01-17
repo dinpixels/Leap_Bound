@@ -48,7 +48,7 @@ region_rect = Rect2( 0, 0, 16, 16 )
 [node name="Detector" type="Area2D" parent="."]
 show_behind_parent = true
 light_mask = 0
-collision_mask = 58
+collision_mask = 122
 input_pickable = false
 
 [node name="Collision" type="CollisionShape2D" parent="Detector"]
@@ -113,5 +113,6 @@ anims/idle = SubResource( 3 )
 
 [node name="SFX" type="AudioStreamPlayer" parent="."]
 
-[connection signal="area_entered" from="Detector" to="." method="_on_Detector_area_entered"]
-[connection signal="body_entered" from="Detector" to="." method="_on_Detector_body_entered"]
+[connection signal="area_entered" from="Detector" to="." method="_on_area_entered"]
+[connection signal="area_exited" from="Detector" to="." method="_on_area_exited"]
+[connection signal="body_entered" from="Detector" to="." method="_on_body_entered"]

@@ -1,14 +1,17 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Scripts/ShortLog.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/World/Log.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/MovingBridgeTile.gd" type="Script" id=3]
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 8, 8 )
+extents = Vector2( 4, 4 )
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 8, 8 )
+extents = Vector2( 4, 4 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 16, 8 )
 
 [node name="ShortLog" type="Node2D"]
 light_mask = 0
@@ -44,6 +47,16 @@ script = ExtResource( 3 )
 [node name="Collision" type="CollisionShape2D" parent="Tile2"]
 light_mask = 0
 shape = SubResource( 4 )
+
+[node name="Safezone" type="Area2D" parent="."]
+light_mask = 0
+collision_layer = 64
+input_pickable = false
+monitoring = false
+
+[node name="Collision" type="CollisionShape2D" parent="Safezone"]
+light_mask = 0
+shape = SubResource( 5 )
 
 [node name="Offscreen" type="VisibilityNotifier2D" parent="."]
 show_behind_parent = true

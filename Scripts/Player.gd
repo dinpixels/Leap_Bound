@@ -6,8 +6,11 @@ const TILE_SIZE := 16
 var new_position_x : float
 var new_position_y : float
 
-var on_moving_bridge := false
-var moving_bridge = null
+var on_moving_bridge_tile := false
+var moving_bridge_tile = null
+
+var on_safezone := false
+var safezone = null
 
 onready var sfxs := [
 	preload("res://Assets/audio/sfx/jump.wav"),
@@ -15,6 +18,7 @@ onready var sfxs := [
 	preload("res://Assets/audio/sfx/wall.wav"),
 ]
 
+onready var detector := $Detector
 onready var front_raycast := $WallDetector/Front
 onready var down_raycast := $WallDetector/Down
 onready var left_raycast := $WallDetector/Left
@@ -33,21 +37,17 @@ func _ready() -> void:
 
 
 func _physics_process(_delta: float) -> void:
-	if on_moving_bridge == true:
-		global_position  = moving_bridge.global_position
-
+	if on_moving_bridge_tile == true:
+		global_position  = moving_bridge_tile.global_position
+		if detector.overlaps_area(safezone):
+			on_safezone = true
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("leap_forward"):
 		# Check if some walls block the player
 		if not front_raycast.is_colliding() == true:
 			# Remove bridge's global position
-			if on_moving_bridge == true:
-				on_moving_bridge = false
-				new_position_x = moving_bridge.up_tile_neighbor.x
-				new_position_y = moving_bridge.up_tile_neighbor.y
-				moving_bridge = null
-
+			reset_position()
 			tween_stop()
 
 			# Clamp the values so the player snaps to 16x16 tiles
@@ -60,12 +60,7 @@ func _input(event: InputEvent) -> void:
 
 	elif event.is_action_pressed("leap_down"):
 		if not down_raycast.is_colliding() == true:
-			if on_moving_bridge == true:
-				on_moving_bridge = false
-				new_position_x = moving_bridge.up_tile_neighbor.x
-				new_position_y = moving_bridge.up_tile_neighbor.y
-				moving_bridge = null
-
+			reset_position()
 			tween_stop()
 
 			new_position_x = global_position.x
@@ -77,12 +72,7 @@ func _input(event: InputEvent) -> void:
 
 	elif event.is_action_pressed("leap_left"):
 		if not left_raycast.is_colliding() == true:
-			if on_moving_bridge == true:
-				on_moving_bridge = false
-				new_position_x = moving_bridge.up_tile_neighbor.x
-				new_position_y = moving_bridge.up_tile_neighbor.y
-				moving_bridge = null
-
+			reset_position()
 			tween_stop()
 
 			new_position_x = clamp(global_position.x, global_position.x, global_position.x - TILE_SIZE)
@@ -95,12 +85,7 @@ func _input(event: InputEvent) -> void:
 
 	elif event.is_action_pressed("leap_right"):
 		if not right_raycast.is_colliding() == true:
-			if on_moving_bridge == true:
-				on_moving_bridge = false
-				new_position_x = moving_bridge.up_tile_neighbor.x
-				new_position_y = moving_bridge.up_tile_neighbor.y
-				moving_bridge = null
-
+			reset_position()
 			tween_stop()
 
 			new_position_x = clamp(global_position.x, global_position.x + TILE_SIZE, global_position.x)
@@ -108,6 +93,14 @@ func _input(event: InputEvent) -> void:
 
 			tween_leap()
 			play_sfx(0, 1.75, 2.0)
+
+
+func reset_position() -> void:
+	if on_moving_bridge_tile == true:
+		on_moving_bridge_tile = false
+		new_position_x = moving_bridge_tile.up_tile_neighbor.x
+		new_position_y = moving_bridge_tile.up_tile_neighbor.y
+		moving_bridge_tile = null
 
 
 # For smooth controls of the player and continuous leaping, we'll check first if the tween is active, if it is active, we'll put the previous values immediately & effectively stop the tween, therefore snapping the old values
@@ -150,26 +143,24 @@ func _game_over() -> void:
 	print("GAME OVER!!!")
 
 
-func _on_Detector_body_entered(body) -> void:
-	# Check what tile the player is on (e.g. water, logs, etc.)
-
-	if body is TileMap:
-		# Convert local position to tilemap coordinates
-		var local_position = body.to_local(global_position)
-		var map_position = body.world_to_map(local_position)
-
-		# 2 = danger
-		match body.collision_layer:
-			2:  # 0 = water, 5 = cliff
-				if not on_moving_bridge == true:
-					if body.get_cellv(map_position) == 0 or 5:
-						_game_over()
-
-
-
-func _on_Detector_area_entered(area) -> void:
+func _on_area_entered(area) -> void:
 	match area.collision_layer:
-		32:
+		32: # A tile on MovingBridge
 			tween_stop()
-			on_moving_bridge = true
-			moving_bridge = area
+			on_moving_bridge_tile = true
+			moving_bridge_tile = area
+
+		64: # The safe area in MovingBridge
+			on_safezone = true
+			safezone = area
+
+
+func _on_body_entered(body) -> void:
+	if on_safezone == false:
+		if body.collision_layer == 2:
+			_game_over()
+
+
+func _on_area_exited(area) -> void:
+	match area.collision_layer:
+		64: on_safezone = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Scripts/ShortLog.gd" type="Script" id=1]
 [ext_resource path="res://Scenes/World/Log.tscn" type="PackedScene" id=2]
@@ -12,6 +12,9 @@ extents = Vector2( 4, 4 )
 
 [sub_resource type="RectangleShape2D" id=5]
 extents = Vector2( 4, 4 )
+
+[sub_resource type="RectangleShape2D" id=6]
+extents = Vector2( 24, 8 )
 
 [node name="LongLog" type="Node2D"]
 light_mask = 0
@@ -59,3 +62,21 @@ script = ExtResource( 3 )
 [node name="Collision" type="CollisionShape2D" parent="Tile3"]
 light_mask = 0
 shape = SubResource( 5 )
+
+[node name="Safezone" type="Area2D" parent="."]
+light_mask = 0
+collision_layer = 64
+input_pickable = false
+monitoring = false
+
+[node name="Collision" type="CollisionShape2D" parent="Safezone"]
+light_mask = 0
+position = Vector2( 8, 0 )
+shape = SubResource( 6 )
+
+[node name="Offscreen" type="VisibilityNotifier2D" parent="."]
+show_behind_parent = true
+light_mask = 0
+rect = Rect2( -16, -8, 48, 16 )
+
+[connection signal="viewport_exited" from="Offscreen" to="." method="_on_viewport_exited"]
