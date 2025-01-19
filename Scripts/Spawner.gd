@@ -2,6 +2,7 @@ tool
 extends Node2D
 
 
+export (bool) var allow_spawn := false setget set_allow_spawn, is_spawn_allowed
 export (bool) var safe := true setget set_safe_type, is_safe
 export (int, 0, 1) var no := 0 setget set_item_no, get_item_no
 export (int, -1, 1) var direction := -1
@@ -18,10 +19,11 @@ onready var timer := $Timer
 
 func _ready() -> void:
 	#if not OS.is_debug_build():
-		_spawn()
+	if allow_spawn == true:
+		spawn()
 
 
-func _spawn() -> void:
+func spawn() -> void:
 	timer.start(seconds)
 
 	var obj = scenes[no].instance()
@@ -53,5 +55,14 @@ func get_item_no() -> int:
 	return no
 
 
+func set_allow_spawn(allow: bool) -> void:
+	allow_spawn = allow
+
+
+func is_spawn_allowed() -> bool:
+	return allow_spawn
+
+
 func _on_timeout() -> void:
-	_spawn()
+	if allow_spawn == true:
+		spawn()

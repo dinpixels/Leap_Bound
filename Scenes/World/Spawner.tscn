@@ -17,9 +17,16 @@ region_enabled = true
 region_rect = Rect2( 0, 0, 16, 16 )
 script = ExtResource( 3 )
 
+[node name="Offscreen" type="VisibilityNotifier2D" parent="Sprite"]
+show_behind_parent = true
+light_mask = 0
+rect = Rect2( -56, -120, 112, 240 )
+
 [node name="Timer" type="Timer" parent="."]
 process_mode = 0
 wait_time = 3.0
 one_shot = true
 
+[connection signal="viewport_entered" from="Sprite/Offscreen" to="Sprite" method="_on_viewport_entered"]
+[connection signal="viewport_exited" from="Sprite/Offscreen" to="Sprite" method="_on_viewport_exited"]
 [connection signal="timeout" from="Timer" to="." method="_on_timeout"]
